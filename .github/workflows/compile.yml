@@ -1,0 +1,36 @@
+name: Compile KingRise
+
+on:
+  push:
+    paths:
+      - '**/*.pwn'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential wget unzip
+
+      - name: Download Pawn Compiler
+        run: |
+          wget https://github.com/pawn-lang/compiler/releases/download/v3.10.7/pawnc-linux.zip
+          unzip pawnc-linux.zip
+          chmod +x pawncc
+
+      - name: Compile kingrise.pwn
+        run: |
+          ./pawncc kingrise.pwn
+
+      - name: Upload compiled AMX
+        uses: actions/upload-artifact@v4
+        with:
+          name: kingrise-amx
+          path: kingrise.amx
